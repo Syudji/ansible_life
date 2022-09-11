@@ -1,0 +1,23 @@
+---
+ - name: Partition disk, file system mount
+   hosts: all
+   become: yes
+   gather_facts: yes
+   tasks:
+     - name: Ubuntu wiknes 
+       apt:
+         update_cache: yes
+         cache_valid_time: 3600
+         name: libextunix-ocaml-dev  
+         state: present
+       when: ansible_hostname == "ubuntu"
+     - name: create loopdevice file
+       shell: 
+         cmd: fallocate -l 10G /home/vagrant/disk0
+         creates: /home/vagratn/disk0
+       when: ansible_facts['devices'] != "loop10"
+     - name: Setup loop
+       shell:  
+         cmd: losetup /dev/loop10 /home/vagrant/disk0
+       when: ansible_facts['devices'] != "loop10"
+  

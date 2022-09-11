@@ -1,0 +1,21 @@
+---
+ - name: Add user profil
+   copy:
+     src: /tmp/file
+     dest: "/home{{ username }}/.profile"
+     owner: "{{ username }}"
+     group: "{{ username }}"
+     mode: 0744 
+
+ - name: add private ssh key
+   copy:
+     src: "{{ item_src }}"
+     dest: "/home/{{ username }}/.ssh/{{ item_dest }}"
+     owner: "{{ username }}"
+     group: "{{ username }}"
+     mode: 0600
+   with_items: ssh_private_keys
+      
+ - name:  Restart exemple
+   service: name=ssh.server state=restarted
+        

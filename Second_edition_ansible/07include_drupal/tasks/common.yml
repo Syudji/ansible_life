@@ -1,0 +1,8 @@
+---
+ - name: Get basic software
+   apt: 
+    name: "{{ item }}" 
+    state: present
+   with_items:
+      - python-apt
+      - python-pycurl

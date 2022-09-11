@@ -1,0 +1,2 @@
+group_vars: httpd
+dest_web: /var/www/html/

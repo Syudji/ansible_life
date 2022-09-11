@@ -1,0 +1,16 @@
+--- 
+ - name: Install and create at job
+   hosts: all
+   become: yes
+   gather_facts: no
+   tasks:
+     - name: backup users database
+       cron:
+         name: backup users
+         hour: 5
+         minute: 30
+         weekday: 1-5
+         user: root
+         job: 'tar -czf /root/users.tgz /etc/passwd /etc/group /etc/shadow /home/'
+         cron_file: backup_user
+

@@ -1,0 +1,30 @@
+---
+ - hosts: srv
+   become: yes
+   
+   tasks: 
+    - name: Install NGINX
+      package: 
+       name: nginx
+       update_cache: yes
+
+    - name: Copy nginx cofig file
+      copy:
+        src: nginx.conf
+        dest: /etc/nginx/sites-available/default
+
+    - name: Enable configuration
+      file: 
+        dest: /etc/nginx/sites-enabled/default
+        src: /etc/nginx/sites-available/default
+        state: link
+    - name: Copy index.html 
+      template:
+        src: templates/index.html.j2
+        dest: /usr/share/nginx/html/index.html
+    - name: Restart NGINX
+      service:
+        name: nginx
+        state: restarted
+        enabled: yes
+

@@ -1,0 +1,30 @@
+---
+ - name: Managing Partition
+   hosts: os2
+   gather_facts: no
+   become: yes
+   tasks:
+    - name: Partition loop10 P1
+      parted:
+        device: /dev/loop10
+        part_start: 0%
+        part_end: 50%
+        number: 1
+        state: present
+    - name: Create XFS filesystem on P1
+      filesystem:
+        dev: /dev/loop10p1
+        fstype: xfs
+    - name: Create mount point
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /data
+        - /data/p1
+    - name: Mount P1 to /data/p1
+      mount:
+        path: /data/p1
+        src: /dev/loop10p1
+        fstype: xfs
+        state: mounted

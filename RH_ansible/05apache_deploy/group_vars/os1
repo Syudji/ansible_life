@@ -1,0 +1,6 @@
+group_vars: apache2
+dest_web: /var/www/html/index.html
+firewall_pkg: ufw
+apache_cfg: /etc/apache2/sites-enabled/000-default.conf
+apache_user: www-data
+dest_dir: /var/www/html

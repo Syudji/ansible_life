@@ -1,0 +1,42 @@
+---
+ - name: Managing Partition
+   hosts: os2
+   gather_facts: no
+   become: yes
+   tasks:
+    - name: Partition loop10 P2
+      parted:
+        device: /dev/loop10
+        part_start: 50%
+        part_end: 100%
+        number: 2
+        flags: [ lvm ]
+        state: present
+    - name: Create volume group
+      lvg:
+        vg: vg1
+        pvs: /dev/loop10p2
+      force: yes
+    - name: Create Logical Volume
+      lvol:
+        lv: lv1
+        vg: vg1
+        size: 100%FREE
+        shrink: no
+    - name: Create filesystem on lv1
+      filesystem:
+        dev: /dev/vg1/lv1
+        fstype: xfs
+    - name: Create maunt point for lv1
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /data/
+        - /data/lv1   
+    - name: Mount P1 to /data/p2
+      mount:
+        path: /data/lv1
+        src: /dev/vg1/lv1
+        fstype: xfs
+        state: mounted

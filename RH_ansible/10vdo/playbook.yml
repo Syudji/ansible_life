@@ -1,0 +1,22 @@
+---
+ - name: update and reboot
+   hosts: os2
+   gather_facts: no
+   become: yes
+   tasks:
+     - name: Update all packages
+       package:
+         name: '*'
+         state: latest
+       notify: reboot
+     - name: run handlers now
+       meta: flush_handlers
+     - name: Collect Kernel
+       shell: "uname -r" 
+       register: kernel_version
+     - name: show kernel version
+       debug:
+         msg: "The kernel is: {{ kernel_version.stdout }}"
+   handlers:
+     - name: reboot
+       reboot:

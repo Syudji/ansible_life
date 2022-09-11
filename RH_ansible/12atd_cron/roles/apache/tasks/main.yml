@@ -1,0 +1,66 @@
+---
+ - name: Install apache
+   package:
+     name: "{{ group_vars }}"
+     state: present
+ - name: Install acl
+   package:
+     name: "{{ acl }}"
+     state: present
+   when: ansible_hostname !=  "centos"
+ - name: wicknes centos 
+   package:
+     name: "{{ centos_kostil }}"
+     state: present
+   when: ansible_hostname == "centos"
+ - name: START AND ENEBLE SERVICE
+   service:
+     name: "{{ group_vars }}"
+     state: restarted
+     enabled: yes
+ - name: Config apache servers 3 diff os
+   template:
+     src: server.html.j2
+     dest: "{{ web_conf_file }}"
+    
+ - name: create foder
+   file:
+     path: "{{ dest_dir }}"
+     state: directory
+     owner: root
+     group: root
+     mode: 0755
+   when: ansible_hostname == "suse"
+ - name: restart apache
+   service:
+     name: "{{ group_vars }}"
+     state: restarted
+   notify: 
+     - restart_apache
+ - name: Secuuryti default ACL for Apache document root
+   acl:
+     path: "{{ dest_dir }}"
+     entity: "{{ apache_user }}"
+     etype: user
+     state: present
+     permissions: xr
+     default: yes
+ - name: Set ACL for others on document root
+   acl:
+     path: "{{ dest_dir }}"
+     entry: default:others::---
+     state: present 
+ - name: Set read execut permission on document root for apache
+   acl:
+     path: "{{ dest_dir }}"
+     entity: "{{ apache_user }}"
+     etype: user
+     state: present
+     permissions: xr
+ - name: Set permission to other to nothing on document
+   acl:
+     path: "{{ dest_dir }}"
+     entry: others::---
+     state: present
+
+# tasks file for /home/user1/.ansible/roles/apache

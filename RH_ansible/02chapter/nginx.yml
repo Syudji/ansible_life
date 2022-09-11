@@ -1,0 +1,20 @@
+---
+
+ - name: Manage masking of NGINX
+   hosts: all
+   become: true
+   gather_facts: false
+   tasks:
+     - name: Collect service list
+       service_facts:
+     - name: Mask Nginx
+       systemd:
+         name: nginx
+         masked: true
+         state: stoped
+       when: "'nginx.service' in ansible_facts.services"
+     
+     - name: Messages test
+       debug:
+         msg: "@@@This supose to be@@@"
+       when: "'apache2.service' in ansible_facts.services"

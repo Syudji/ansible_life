@@ -1,0 +1,18 @@
+---
+ - name: Manage Apache Deployment
+   hosts: all
+   become: true
+   gather_facts: true
+   vars:
+     - service_name: http
+     - php_enable_webserver: true
+   roles:
+     - apache
+     - firewall
+     - standard_web
+     - geerlingguy.php
+   tasks:
+    - name: add php page
+      copy:
+        dest: "{{ dest_web }}"
+        content: "<?php phpinfo(); ?>"

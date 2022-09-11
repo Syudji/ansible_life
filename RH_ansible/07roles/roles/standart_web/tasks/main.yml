@@ -1,0 +1,12 @@
+---
+# - name: Comy web content
+ #  copy: 
+  #   src: /web/
+   #  directory_mod: yes
+    # dest: "{{ dest_dir }}"
+ - name: Custom web content.
+   template:
+     src: index.html.j2
+     dest: "{{ dest_web }}"
+ 
+# tasks file for /home/user1/.ansible/roles/standart_web

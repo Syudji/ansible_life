@@ -1,0 +1,18 @@
+---
+ - name: Manage SSHD
+   hosts: os1
+   gather_facts: false
+   become: true
+   tasks:
+     - name: Edit SSHD Config
+       lineinfile:
+         path: /etc/ssh/sshd_config  
+         regexp: '^PermitRootLogin' 
+         insertafter: '#PermitRootLogin prohibit-password' 
+         line: '#PermitRootLogin prohibit-password'
+      
+   handlers:
+      - name: Restart sshd
+        service:
+          name: sshd
+          state: restarted

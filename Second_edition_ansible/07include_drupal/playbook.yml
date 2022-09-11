@@ -1,0 +1,19 @@
+---
+ - hosts: multi
+   become: true
+    
+   vars_files:
+     - "vars.yml"
+   pre_tasks:
+     - name: Update cache 
+       apt: update_cache=yes cache_valid_time=3600
+
+   handlers:
+      - include: handlers/hanndlers.yml
+
+   tasks:
+     - include: tasks/common.yml tags=common
+     - include: tasks/php.yml tags=php
+     - include: tasks/apache.yml tags=apache      
+     - include: tasks/mysql.yml tags=mysql
+     

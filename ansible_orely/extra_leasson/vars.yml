@@ -1,0 +1,12 @@
+---
+ soft:
+  - apache2
+  - mariadb-server
+  - php
+  - libapach2-mod-php
+  - php-mbstring
+  - php-intl
+  - php-xml
+  - php-mysql
+  - php-apcu
+  - php-imagick

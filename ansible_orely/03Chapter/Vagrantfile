@@ -1,0 +1,57 @@
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure("2") do |config|
+# general VM configuration
+    config.vm.box = "ubuntu/focal64"
+    config.ssh.insert_key = false
+    config.vm.synced_folder  ".", "/vagrant", disabled: true
+    config.vm.provider :virtualbox do |v|
+        v.memory = 512
+        v.linked_clone = true
+    end
+config.vm.define "vagrant1" do |vagrant1|
+  vagrant1.vm.box = "ubuntu/focal64"
+  vagrant1.vm.hostname = "vagrant1"
+  vagrant1.vm.network :public_network, ip: "192.168.1.200"
+  vagrant1.vm.network "forwarded_port", guest: 80, host: 8080
+  vagrant1.vm.network "forwarded_port", guest: 443, host: 8443
+end
+config.vm.define "vagrant2" do |vagrant2|
+  vagrant2.vm.box = "ubuntu/focal64"
+  vagrant2.vm.network :public_network, ip: "192.168.1.201"
+  vagrant2.vm.network "forwarded_port", guest: 80, host: 8081
+  vagrant2.vm.network "forwarded_port", guest: 443, host: 8444
+end
+config.vm.define "vagrant3" do |vagrant3|
+  vagrant3.vm.box = "ubuntu/focal64"
+  vagrant3.vm.network :public_network, ip: "192.168.1.202"
+  vagrant3.vm.network "forwarded_port", guest: 80, host: 8082
+  vagrant3.vm.network "forwarded_port", guest: 443, host: 8445
+end
+# config.vm.define "app1" do |app1|
+#   app1.vm.box = "ubuntu/focal64"
+#   app1.vm.network :public_network, ip: "192.168.1.188"
+    
+# end
+# config.vm.define "app2" do |app2|
+#   app2.vm.box = "ubuntu/focal64"
+#   app2.vm.network :public_network, ip: "192.168.1.189"
+# end
+# config.vm.define "app4" do |app4|
+#   app4.vm.box = "ubuntu/focal64"
+#   app4.vm.network :public_network, ip: "192.168.1.190"
+
+# end
+# config.vm.define "app3" do |app3|
+#   app3.vm.box = "ubuntu/focal64"   
+#   app3.vm.network :public_network, ip: "192.168.1.191"
+# end
+# config.vm.define "db1" do |db1|
+#   db1.vm.box = "ubuntu/focal64"
+#   db1.vm.network :public_network, ip: "192.168.1.192"
+# end
+# config.vm.define "db2" do |db2|
+#   db2.vm.box = "ubuntu/focal64"
+#   db2.vm.network :public_network, ip: "192.168.1.193"
+# end
+end

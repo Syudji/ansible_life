@@ -1,0 +1,87 @@
+#! /usr/bin/env ansible-playbook          
+---
+ - name: config webserer with TLS
+ - hosts: srv
+   become: yes
+   
+   vars:
+     tls_dir: /etc/nginx/ssl/
+     key_file: files/nginx.key
+     cert_file: files/nginx.crt
+     conf_file: /etc/nginx/sites-available/default
+     server_name: srv
+     nest_of_dragon: /usr/share/nginx/html/index.html
+   
+   handlers:
+     - name: Restart NGINX
+       service:    
+        name: nginx
+        state: restart
+   
+   tasks:
+    - name: Install Nginx 
+      packages:
+         name: nginx
+         cache_apdate: yes
+      notify: Rstart NGINX
+    
+    - name: Create directories for TLS
+      file:
+         path: "{{ tls_dir }}"
+         state: directory
+         mode: '0750'
+      notify: Restart NGINX
+    
+    - name: Copy TLS file
+      copy:
+        src: "{{ item }}"
+        dest: "{{ tls_dir }}"
+        mode: '0600'
+      loop:
+         - "{{ cert_file }}"
+         - "{{ key_file }}"
+      notify: Restart NGINX
+
+    - name: Install nginx config template
+      template:
+        src: nginx.conf.j2
+        dest: "{{ conf_file }}"
+        mode: '0644'
+      notify: Restart NGINX
+  
+    - name: Copy TLS files
+      copy:
+        src: "{{ item }}"
+        dest: "{{ tls_dir }}"
+        mode: '0600'
+      loop:
+        - "{{ key_file }}"
+        - "{{ cert_file }}"
+      notify: Restart NGINX
+   
+    - name: Isntall additional nginx template
+      template:
+         src: templates/nginx.conf.j2
+         dest: "{{ conf_file }}"
+         mode: '0644'
+      notify: Restart NGINX
+
+    - name: Install Home Page
+      template:
+        src: templates/index.html.j2
+        dest: "{{ nest_of_dragon }}"
+        mode: '0644'
+    - name: Restart NGINX
+      meta: flush_handlers
+
+    - name: "Test it!  https://localhost:7443/index.html"
+      delegate_to: localhost
+      become: no 
+      uri:
+         url: 'https://localhost:7443/index.html'
+         validate_certs: no 
+         returne_contetn: yes
+      register: this
+      failed_when: "' Ranning on ' not in this.contetn"
+      tags:
+        - test

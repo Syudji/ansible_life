@@ -1,0 +1,15 @@
+<VirtualHost *:80>
+    ServerAdmin admin@main.de
+    ServerName 192.168.178.200  
+    ServerAlias www.{{ ansible_hostname }}.local
+    DocumentRoot /srv/www/html
+    ErrorLog /var/log/main.error.log
+    CustomLog /var/log/main.log common
+   <Directory "/srv/www/html">
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride all
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+

@@ -1,0 +1,13 @@
+<VirtualHost *:80>
+    ServerAdmin admin@main.de
+    ServerName {{ web_ip }}  
+    ServerAlias localhost
+    DocumentRoot {{ dest_dir }}
+   <Directory "{{ dest_dir }}">
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride all
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+

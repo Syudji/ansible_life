@@ -1,0 +1,10 @@
+---
+ - include: ../vars.yml
+ - name: Add php andrej repo 
+   apt_repository:
+      repo: "ppa:ondrej/php"
+      update_cache: yes
+ - name: Install php
+   apt: 
+    name: "{{ php_soft }}" 
+    state: present

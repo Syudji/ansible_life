@@ -1,0 +1,5 @@
+---
+# Create user
+user_name: "elton"
+# Add user "yes" delete user "no"
+user_create: "yes"

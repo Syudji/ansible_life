@@ -1,0 +1,18 @@
+---
+- hosts: multi
+  tags: webserver
+
+  roles: 
+    { role: tomcat, tags: [ 'tomcat', 'app' ] }
+  
+  tasks:
+    - name: Notify completion
+      local_action:
+         module: osx_say
+         msg: "{{ inventory_hostname }} if finished"
+         voice: Zarvox
+      tags:
+        - notyfications
+        - say
+    - include: foo.yaml
+    - tags: foo

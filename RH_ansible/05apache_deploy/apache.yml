@@ -1,0 +1,122 @@
+---
+ - name: Install Apache 
+   hosts: all
+   become: yes
+   gather_facts: yes
+   tasks:
+     - name: Install apache
+       package:
+         name: "{{ group_vars }}"
+         state: present
+     
+     - name: START AND ENEBLE SERVICE
+       service:
+         name: "{{ group_vars }}"
+         state: restarted
+         enabled: yes
+     - name: Config suse apache
+       lineinfile:
+         path: /etc/apache2/default-server.conf
+         regexp: 'DocumentRoot "/srv/www/htdocs"'
+         line: DocumentRoot "/srv/www/html"
+       when: (ansible_hostname == "suse")
+      
+     - name: Config suse apache
+       lineinfile:
+         path: /etc/apache2/default-server.conf
+         regexp: '<Directory "/srv/www/htdocs">'
+         line: <Directory "/srv/www/html">
+       when: ansible_hostname == "suse"
+     - name: create folder
+       file:
+         path: /srv/www/html/
+         state: directory
+         owner: root
+         group: root
+         mode: 0755
+       when: ansible_hostname == "suse"
+         
+     - name: Copy web site file
+       template:
+         src: server.j2
+         dest: "{{ dest_web }}"
+     - name: restart apache
+       service:
+         name: "{{ group_vars }}"
+         state: restarted
+     
+     - name: Firewall pkg
+       package:
+         name: "{{ firewall_pkg }}"
+         state: present
+         
+     - name: Firewall service
+       service:
+         name: "{{ firewall_pkg }}"
+         enabled: yes
+         state: started
+     - name: UFW
+       ufw:
+         state: enabled
+         policy: deny
+         rule: allow
+         port: "{{ item }}"
+         proto: tcp
+       loop:
+         - "80"
+         - "22"
+         - "443"
+       when: ansible_hostname == "ubuntu"
+
+     - name: Firewalld Centos
+       firewalld:
+         service: "{{ item }}"
+         permanent: yes
+         immediate: yes
+         state: enabled
+       loop: 
+         - "http"
+         - "ssh"
+         - "https"
+       when: ansible_hostname != "ubuntu"
+    
+     - name: Config Apache2
+       lineinfile:
+         path: "{{ apache_cfg }}"
+         line: "ServerName {{ ansible_hostname }}"
+         insertafter: "#ServerName"
+       notify: 
+         - restart_apache
+      
+
+     - name: Secuuryti default ACL for Apache document root
+       acl:
+         path: "{{ dest_dir }}"
+         entity: "{{ apache_user }}"
+         etype: user
+         state: present
+         permissions: xr
+         default: yes
+     - name: Set ACL for others on document root
+       acl:
+         path: "{{ dest_dir }}"
+         entry: default:others::---
+         state: present 
+     - name: Set read execut permission on document root for apache
+       acl:
+         path: "{{ dest_dir }}"
+         entity: "{{ apache_user }}"
+         etype: user
+         state: present
+         permissions: xr
+     - name: Set permission to other to nothing on document
+       acl:
+         path: "{{ dest_dir }}"
+         entry: others::---
+         state: present
+
+   handlers:
+    - name: restart_apache
+      service:
+        name: "{{ group_vars }}"
+        state: restarted

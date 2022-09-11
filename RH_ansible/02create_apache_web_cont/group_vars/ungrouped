@@ -1,0 +1,2 @@
+group_vars: apache2
+dest_web: /srv/www/html/

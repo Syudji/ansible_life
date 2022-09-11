@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo "<HTML>
+     <HEAD>
+       <TITLE>System Information Report</TITLE>
+         </HEAD>
+            <BODY>
+              <H1>System Information Report </H1>
+                  </BODY>
+                    </HTML>"

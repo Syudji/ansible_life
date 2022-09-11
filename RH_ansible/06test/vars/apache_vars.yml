@@ -1,0 +1,5 @@
+web_root_dir: "/srv/www/html"
+app:
+ - firewalld
+ - apache2
+ - acl

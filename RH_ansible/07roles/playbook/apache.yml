@@ -1,0 +1,13 @@
+---
+ - name: Install Apache 
+   hosts: all
+   become: yes
+   gather_facts: yes
+   vars:
+     - service_name: 
+         - http
+         - https
+   roles:
+     - apache
+     - firewall
+     - standart_web    

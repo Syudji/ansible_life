@@ -1,0 +1,25 @@
+---
+ php_pkg:
+   - php7
+   - php7-devel
+   - php7-fpm
+   - php7-gd
+   - php7-ldap
+   - php7-mbstring
+   - php7-opcache
+   - php7-pdo
+   - php7-pear
+   - php7-xmlreader
+   - php7-xmlwriter
+
+
+#__php_webserver_daemon: "httpd"
+#
+#__php_conf_paths:
+#  - /etc
+#
+#__php_extension_conf_paths:
+#  - /etc/php.d
+#
+# vars file for /home/user1/.ansible/roles/suse.php
+

@@ -1,0 +1,5 @@
+---
+ - name: Restatrt apache2 !!!! ready!!!! lets move!!!
+   service: name=apache state=restarted 
+   shell: echo "HANDLERS IS WORKED" >> /var/log/messages
+  

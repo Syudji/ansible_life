@@ -1,0 +1,4 @@
+If you want play this playbook please ensure some date:
+[inventory/inventory.ini]
+1. We need specify path to insecure_private_key
+2. also should be ip address our web server "ansible_host"

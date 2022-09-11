@@ -1,0 +1,12 @@
+---
+mysql_root_password: Password1
+mysql_root_password_update: true
+mysql_enabled_on_startup: true
+mysql_users:
+  - name: bob
+    host: "%"
+    password: Password1
+    priv: "*.*:ALL"
+
+
+

@@ -1,0 +1,7 @@
+---
+ - name: Install suse pkg
+   package:
+     name: "{{ php_pkg }}"
+     state: present
+   when: ansible_hostname == "suse"
+# tasks file for /home/user1/.ansible/roles/suse.php

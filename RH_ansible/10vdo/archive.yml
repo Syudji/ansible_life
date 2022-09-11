@@ -1,0 +1,11 @@
+---
+ - name: Backup Web
+   hosts: all 
+   become: yes
+   gather_facts: no
+   tasks:
+     - name: DocRoot 
+       archive:
+         path: "{{ dest_web }}"
+         dest: /root/web.tgz
+         format: gz

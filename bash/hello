@@ -1,0 +1,3 @@
+#!/bin/bash
+var1=`hostname`
+echo "$var1 is good"

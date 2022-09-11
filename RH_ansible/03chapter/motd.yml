@@ -1,0 +1,11 @@
+---
+ - name: Manage /etc/motd file
+   hosts: all
+   become: yes
+   gather_facts: yes
+   tasks:
+     - name: Copy /etc/motd
+       template:
+         dest: /etc/motd
+         src: motd.j2
+   

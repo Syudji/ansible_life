@@ -1,0 +1,57 @@
+---
+ - name: Install apache, ensure index.html and permission
+   hosts: suse
+   become: yes
+   gather_facts: yes
+   vars_files:
+    - vars/apache_vars.yml 
+   handlers:
+    - name: restart apache
+      service:
+        name: apache2
+        state: restarted
+   tasks:
+    - name: Install apache
+      package:
+        name: apache2
+        state: present
+    - name: Enable apache (starting at boot) 
+      service:
+        name: apache2
+        enabled: yes #GENAU
+     #   path: /etc/apache2/default-server.conf
+      #  line: "{{ item.line }}"
+      #  regexp: "{{ item.regexp }}"
+     # loop:
+    #    - line: <Directory "/srv/www/html">
+      #    regexp: '<Directory "/srv/www/htdocs">'
+       # - line: DocumentRoot "/srv/www/html"
+       #   regexp: 'DocumentRoot "/srv/www/htdocs"'
+       # - line: 
+    - name: create folder
+      file:
+        path: /srv/www/html/
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+     #- name: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,11 @@
+---
+- name: Manage User Account
+  hosts: suse
+  become: yse
+  gather_facts: no
+  tasks:
+   - name: Update User
+     user:
+       name: "{{ user_name }}"
+       state: present
+       generate_ssh_key: yes

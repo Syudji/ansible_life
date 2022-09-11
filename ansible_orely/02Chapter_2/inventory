@@ -1,0 +1,9 @@
+[srv]
+192.168.178.125
+
+
+[srv:vars]
+ansible_user = vagrant
+ansible_host = 127.0.0.1
+ansible_private_key = ~/key/insecure_private_key
+

@@ -1,0 +1,26 @@
+---
+ - name: Install Apache 
+   hosts: all
+   become: yes
+   gather_facts: no
+   tasks:
+     - name: Install apache
+       package:
+         name: "{{ group_vars }}"
+         state: present
+     
+     - name: START AND ENEBLE SERVICE
+       service:
+         name: "{{ group_vars }}"
+         state: restarted
+         enabled: yes
+     
+     - name: Copy web site file
+       copy:
+         src: ~/power/02chapter/web/
+         directory_mode: yes
+         dest: "{{ dest_web }}"
+     - name: restart apache
+       service:
+          name: "{{ group_vars }}"
+          state: restarted

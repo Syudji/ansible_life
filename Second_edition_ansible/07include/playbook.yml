@@ -1,0 +1,21 @@
+---
+ - hosts: multi
+   become: true
+
+   vars_files:
+     - "vars.yml"
+    
+   tasks:
+    - include: user.yml
+      vars:
+        username: johndoe
+        ssh_private_keys:
+          - { src: /path/to/johndoe/key1, dest: id_rsa }
+          - { src: /path/to/johndoe/key2, dest: id_rsa_2 }
+    - include: user.yml
+      vars:
+        username: janedoe
+        ssh_private_keys:
+         - { src: /path/to/janedoe/key1, dest: id_rsa }
+         - { src: /path/to/janedoe/key2, dest: id_rsa_2 }
+

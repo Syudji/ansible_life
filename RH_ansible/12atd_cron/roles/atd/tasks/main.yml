@@ -1,0 +1,12 @@
+---
+ - name: install and enable atd
+   package:
+     name: at
+     state: latest
+ - name: enable services
+   service:
+     name: atd
+     state: started
+     enabled: yes
+
+# tasks file for /home/user1/.ansible/roles/atd

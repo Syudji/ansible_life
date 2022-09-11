@@ -1,0 +1,68 @@
+---
+ - name: Install apache, ensure index.html and permission
+   hosts: os2
+   become: yes
+   gather_facts: yes
+   vars_files:
+    - vars/apache_vars.yml 
+   handlers:
+    - name: restart apache
+      service:
+        name: httpd
+        state: restarted
+   tasks:
+    - name: Install apache
+      package:
+        name: httpd
+        state: present
+    - name: Enable apache (starting at boot) 
+      service:
+        name: httpd
+        enabled: yes #GENAU
+       
+    - name: Manage apache main configuration file
+      template:
+        src: templates/main.conf.j2
+        dest: /etc/httpd/conf.d/main.conf
+        owner: root
+        group: root
+        mode: '0644'
+    - name: Create directory for website 
+      file:
+        path: "{{ web_root_dir }}"
+        state: directory
+        
+      notify: restart apache
+    - name: Build index.html file # also I use here another method of filling file  module:copy opt. content
+      copy:
+        dest: "{{ web_root_dir }}/index.html" 
+        force: yes
+        mode: '0755'
+        content: | 
+         Web server os family {{ ansible_os_family }}
+    - name: Change acl for our DirectoryRoot
+      acl:
+        path: "{{ web_root_dir }}"
+        entity: apache
+        etype: user
+        state: present
+        permissions: xr
+        default: yes
+    - name: ACL other user
+      acl:
+        path: "{{ web_root_dir }}"
+        entry: default:others::---
+        state: present
+    - name: ACL read exec perm for apache 
+      acl:
+        path: "{{ web_root_dir }}"
+        entity: apache
+        etype: user
+        state: present
+        permissions: xr
+    - name: ACL for other
+      acl:
+        path: "{{ web_root_dir }}"
+        entry: others::---
+        state: present
+        

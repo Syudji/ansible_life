@@ -1,0 +1,37 @@
+---
+  - name: Firewall pkg
+    package:
+      name: "{{ firewall_pkg }}"
+      state: present
+         
+  - name: Firewall service
+    service:
+      name: "{{ firewall_pkg }}"
+      enabled: yes
+      state: started
+  - name: UFW
+    ufw:
+      state: enabled
+      policy: deny
+      rule: allow
+      port: "{{ item }}"
+      proto: tcp
+    loop:
+      - "https"
+      - "ssh"
+      - "http"
+    when: ansible_hostname == "ubuntu"
+
+  - name: Firewalld Centos
+    firewalld:
+      service: "{{ item }}"
+      permanent: yes
+      immediate: yes
+      state: enabled
+    loop: 
+      - "http"
+      - "ssh"
+      - "https"
+    when: ansible_hostname != "ubuntu"
+
+# tasks file for /home/user1/.ansible/roles/firewall

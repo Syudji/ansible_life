@@ -1,0 +1,13 @@
+group_vars: httpd
+centos_kostil: epel-release.noarch
+dest_web: /var/www/html/index.html
+
+firewall_pkg: firewalld
+apache_cfg: /etc/httpd/conf/httpd.conf
+apache_user: apache
+dest_dir: /var/www/html
+web_conf_file: /etc/httpd/conf.d/newwebsite.conf
+web_ip: 192.168.178.199
+
+php_web: /var/www/html/test.php
+php_mysql: php-mysqlnd

@@ -1,0 +1,9 @@
+group_vars: apache2
+dest_web: /var/www/html/index.html
+firewall_pkg: ufw
+apache_cfg: /etc/apache2/sites-enabled/000-default.conf
+apache_user: www-data
+dest_dir: /var/www/html
+web_conf_file: /etc/apache2/sites-available/000-default.conf
+web_ip: 192.168.178.188
+acl: acl

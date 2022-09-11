@@ -1,0 +1,14 @@
+group_vars: apache2
+acl: acl
+dest_web: /srv/www/html/index.html
+
+firewall_pkg: firewalld
+apache_cfg: /etc/apache2/default-server.conf
+apache_user: wwwrun
+dest_dir: /srv/www/html
+web_conf_file: /etc/apache2/vhosts.d/newwebsite.conf
+web_ip: 192.168.178.200
+
+php_web: /srv/www/html/test.php
+
+php_mysql: php-mysqld

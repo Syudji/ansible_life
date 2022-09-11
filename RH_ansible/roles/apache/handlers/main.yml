@@ -1,0 +1,7 @@
+---
+    - name: restart_apache
+      service:
+        name: "{{ group_vars }}"
+        state: restarted
+
+# handlers file for /home/user1/.ansible/roles/apache

@@ -1,0 +1,16 @@
+---
+ name: install suse
+ package:
+   name: 
+   - php7
+   - php7-devel
+   - php7-fpm
+   - php7-gd
+   - php7-ldap
+   - php7-mbstring
+   - php7-opcache
+   - php7-pdo
+   - php7-pear
+   - php7-xmlreader
+   - php7-xmlwriter
+ when: ansible_hostname == "suse"

@@ -1,0 +1,148 @@
+---
+- hosts: lamp
+  become: true
+  vars_files:
+    - "vars.yml"
+
+  pre_tasks:
+    - name: Update apt cache
+      apt: update_cache=yes cache_valid_time=3600
+
+  handlers: 
+    - name: restart apache
+      service: name=apache2 state=restarted
+
+  tasks:
+    - name: ------Get software from repository ------
+      apt: name{{ item }} state=present
+      with_items: 
+        - python-apt
+        - python-pycurl
+    - name: add reposytory for later version of PHP
+      apt_repository: 
+         repo='ppa:ondrej/php'
+         update_cache=yes
+    - name: Install apache and Mysql
+      apt: name={{ item }} state=present
+      with_items:
+         - git
+         - curl
+         - unzip
+         - sendmail
+         - apache2
+         - php7.4-common
+         - php7.1-cli
+         - php7.1-dev
+         - php7.1-gd
+         - php7.1-curl
+         - php7.1-json
+         - php7.1-opcache
+         - php7.1-xml
+         - php7.1-mbstring
+         - php7.1-pdo
+         - php7.1-mysql
+         - php-apcu
+         - libpcre3-dev
+         - libapache2-mod-php7.1
+         - python-mysqldb
+         - mysql-server
+         - python3-mysqldb
+    - name: Config iptables
+      ansible.builtin.iptables:
+         chain: INPUT
+         protocol: tcp
+         destination_port: 80
+         ctstate: NEW
+         syn: match
+         jump: ACCEPT
+         comment: accept webserver connection
+    - name: accpet https incoming connection
+      ansible.builtin.iptables:
+         chain: INPUT
+         protocol: tcp
+         destination_port: 443
+         ctstate: NEW
+         syn: match
+         jump: ACCEPT
+         comment: https allow for lamp
+     
+    - name: Start apache mysql and PHP
+      service: name={{ item }} state=started enabled=yes
+      with_items: 
+          - apache2
+          - mysql
+    - name: Configure apache
+      apache2_module: name=rewrite state=present
+      notify: restart apache
+
+    - name: Add apache virtual host
+      template:
+         src: "templates/drupal.dev.conf.j2"
+         dest: "/etc/apache2/sites-available/{{ domain }}.dev.conf"
+         owner: root
+         group: root
+         mode: 0644
+      notify: restart apache
+    - name: symlink drupal
+      file:
+        src: "/etc/apache2/sites-available/{{ domain }}.dev.conf"
+        dest: "/etc/apache2/sites-enabled/{{ domain }}.dev.conf"
+        state: link
+      notify: restart apache
+    - name: remove old virtual host-file
+      file:
+        path: "/etc/apache2/sites-enabled/000-default.com"
+        state: absent
+      notify: restart apache
+    - name: adjast opCache memory setting
+      lineinfile:
+        dest: "/etc/php/7.1/apache2/conf.d/10-opcache.ini"
+        regexp: "^opcache.memory_consumption"
+        line: "opcache.memory_consumption = 96"
+        state: present
+      notify: restart apache
+  
+    - name: Remove test data base
+      mysql_db: db=test state=absent
+
+    - name: create database for drupal
+      mysql_db: "db={{ domain }} state=present"
+
+    - name: Create db user
+      mysql_user:
+        name: "{{ domain }}"
+        password: "1234"
+        priv: "{{ domain }}.*:ALL"
+        host: localhost
+        state: present
+    - name: download Composer installer
+      get_url: 
+         url: https://getcomposer.org/download/1.6.0/composer.phar
+         dest: /tmp/composer-installer.php
+         mode: 0755
+
+    - name: Run composer installer
+      command: >
+         php composer-installer.php
+         chdir: "/tmp"
+         creates: "/usr/local/bin/composer"
+    - name: Move Composer into globally-accessible location.
+      shell: >
+         mv /tmp/composer.phar /usr/local/bin/composer
+         creates=/usr/local/bin/composer
+
+    - name: Checkout drush
+      git:
+        repo: https://github.com/drush-ops/drush.git
+        version: 8.3.4
+        dest: /opt/drush
+    - name:  Install drush with dependencies
+      shell: >
+         /usr/local/bin/composer install
+         chdir=/opt/drush
+         creates=/opt/drush/vendor/autoload.php
+    - name: Create drush bin symlink
+      file:
+        src: /opt/drush/drush
+        dest: /usr/local/bin/drush
+        state: link

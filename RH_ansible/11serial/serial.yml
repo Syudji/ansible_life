@@ -1,0 +1,14 @@
+---
+ - name: Serial demo
+   hosts: all
+   become: no
+   gather_facts: no
+   serial: 1
+   tasks:
+     - name: Task 1
+       debug: 
+         msg: "output1"
+     - name: Task 2
+       debug:
+         msg: "output2"# ansible-playbook serial.yml
+

@@ -1,0 +1,31 @@
+---
+ - name: Manage User Account
+   hosts: os2
+   become: yse
+   gather_facts: no
+   tasks:
+    - name: Update User
+      user:
+        name: "{{ user_name }}"
+        state: present
+        generate_ssh_key: yes
+    - name: Password-less access for operator
+      copy:
+        src: sheldon
+        dest: /etc/sudoers.d/sheldon
+  
+ - name: Manage dedicate ansible account
+   hosts: all
+   become: yes
+   gather_facts: no
+   remote_user: vagrant
+   tasks:
+    - name: Create ansible accounnt
+      user:
+        name: ansible
+        state: present
+        groups: "{{ admin_group }}"
+        password: "{{ 'Password1' | password_hash('sha512') }}"
+        update_password: on_create
+        comment: Dedicate ansible devops account
+        shell: /bin/bash

@@ -1,0 +1,22 @@
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure("2") do |config|
+    config.vm.box = "ubuntu/focal64", "centos/7"
+    config.ssh.insert_key = false
+    config.vm.synced_folder  ".", "/vagrant", disabled: true
+    config.vm.provider :virtualbox do |v|
+        v.memory = 1024
+        v.linked_clone = true
+end
+config.vm.define "nextc" do |nextc|
+    nextc.vm.hostname = "nextc"
+    nextc.vm.box = "ubuntu/focal64"
+    nextc.vm.hostname = "nextc"
+    nextc.vm.network :public_network, ip: "192.168.178.178"
+    end
+    config.vm.define "nextu" do |nextu|
+        nextu.vm.hostname = "nextu"
+        nextu.vm.box = "ubuntu/focal64"
+        nextu.vm.hostname = "nextu"
+        nextu.vm.network :public_network, ip: "192.168.178.170"
+        end
+end

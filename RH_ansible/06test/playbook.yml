@@ -1,0 +1,83 @@
+ - name: Install apache, ensure index.html and permission
+   hosts: suse
+   become: yes
+   gather_facts: yes
+   vars_files:
+    - vars/apache_vars.yml 
+   handlers:
+    - name: restart apache
+      service:
+        name: apache2
+        state: restarted
+   tasks:
+    - name: Install Web server Firewall and acl
+      package:
+        name: "{{ app }}"
+        state: present
+    - name: Enable apache (starting at boot) 
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes #GENAU
+      loop:
+        - apache2
+        - firewalld
+    - name: Config web site 
+      template:
+        src: templates/main.conf.j2
+        dest: /etc/apache2/vhosts.d/testwebsite.conf 
+    - name: Create folder for web site
+      file:
+        path: "{{ web_root_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+    - name: Filling index.html  
+      copy:
+        dest: "{{ web_root_dir }}/index.html" 
+        force: yes
+        mode: '0755'
+        content: | 
+           <p> Web server os family {{ ansible_os_family }} <br>
+           Web server operation system is {{ ansible_distribution_major_version }} <br> 
+           [HARDWARE] <br>
+           Web server pocessors {{ ansible_processor }}<br>
+           Web server memory {{ ansible_memtotal_mb }} mb </p>
+      notify: restart apache 
+    - name: Firewalld conf
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      loop: 
+        - "http"
+        - "ssh"
+        - "https"  
+    - name: Secuuryti default ACL for Apache document root
+      acl:
+        path: "{{ web_root_dir }}"
+        entity: wwwrun
+        etype: user
+        state: present
+        permissions: xr
+        default: yes
+    - name: Set ACL for others on document root
+      acl:
+        path: "{{ web_root_dir }}"
+        entry: default:others::---
+        state: present 
+    - name: Set read execut permission on document root for apache
+      acl:
+        path: "{{ web_root_dir }}"
+        entity: wwwrun
+        etype: user
+        state: present
+        permissions: xr
+    - name: Set permission to other to nothing on document
+      acl:
+        path: "{{ web_root_dir }}"
+        entry: others::---
+        state: present
+      notify: restart apache

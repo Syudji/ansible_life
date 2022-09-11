@@ -1,0 +1,15 @@
+---
+ - name: Install and create at job
+   hosts: all
+   become: yes
+   gather_facts: no
+   roles:
+     - atd
+ 
+   tasks:
+     - name: backup users tommorow
+       at:
+         command: 'tar -czf /root/users.tgz /etc/passwd /etc/group /etc/shadow /home/'
+         count: 1
+         units: days
+         unique: yes 

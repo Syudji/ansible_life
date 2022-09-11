@@ -1,0 +1,53 @@
+---
+# New Play 1
+ - name: Enable MySQL Port
+   hosts: all
+   gather_facts: yes
+   become: yes
+   vars:  
+     - service_name: mysql
+   roles:
+     - firewall
+# Existing Play is now Play 2
+
+ - name: Install Apache 
+   hosts: all
+   become: yes
+   gather_facts: yes
+   vars:
+     - service_name: 
+         - http
+         - https
+     - php_enable_webserver: yes
+   vars_files:
+     - vars/main.yml
+   roles:
+     - apache
+     - firewall
+     - standart_web 
+     - suse.php
+     - geerlingguy.php
+     - geerlingguy.mysql
+   tasks:
+     - name: add php page
+       copy:
+         dest: "{{ php_web }}"
+         content: "<?php phpinfo(); ?>"
+     - name: install php mysql
+       package:
+         name: "{{ php_mysql }}"
+       notify: restart webserver
+     - name: Apache enable Ubuntu 
+       block: 
+         - name: Install apache module
+           apt:
+             name: libapache2-mod-php
+             state: present
+           notify: restart webserver
+         - name: Enable php module 
+           apache2_module:
+             state: present
+             name: php7.2
+           notify: restart webserver
+       when: ansible_distribution == "Ubuntu"
+

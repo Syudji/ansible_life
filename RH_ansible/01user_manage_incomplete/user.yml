@@ -1,0 +1,23 @@
+---
+ - hosts: all
+   become: yes
+   gather_facts: no
+   vars_files:
+     - vars/user_vars.yml
+   tasks:
+    - name: Manage user account
+      user:
+        name: "{{ user_name }}"
+        shell: /bin/bash
+        state: present
+        password: "{{ 'Password1' | password_hash('sha512') }}"
+        update_password: on_create   
+      when: user_create == 'yes'
+
+    
+    - name: Delete user
+      user:
+        name: "{{ user_name }}"
+        state: absent
+        remove: yes
+      when: user_create == 'no'
